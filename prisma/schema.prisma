@@ -1,0 +1,344 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  emailVerified   DateTime?
+  phone           String
+  password        String
+  role            UserRole  @default(DANCER)
+  
+  // GDPR compliance
+  consentDate     DateTime?
+  consentVersion  String?
+  deletedAt       DateTime?
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  dancer          Dancer?
+  stylist         Stylist?
+  admin           Admin?
+  sessions        Session[]
+  accounts        Account[]
+  bookings        Booking[] @relation("DancerBookings")
+  auditLogs       AuditLog[]
+  
+  @@index([email])
+  @@index([role])
+}
+
+enum UserRole {
+  DANCER
+  STYLIST
+  ADMIN
+}
+
+model Dancer {
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  firstName       String
+  lastName        String
+  dateOfBirth     DateTime?
+  
+  @@index([userId])
+}
+
+model Stylist {
+  id                    String    @id @default(cuid())
+  userId                String    @unique
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Public profile
+  displayName           String
+  bio                   String    @db.Text
+  profileImageUrl       String?
+  portfolioImages       Json      @default("[]")
+  specialty             String
+  yearsExperience       Int?
+  
+  // Verification
+  isVerified            Boolean   @default(false)
+  verifiedAt            DateTime?
+  verifiedBy            String?
+  
+  // US Compliance
+  usWorkPermit          Boolean   @default(false)
+  usWorkPermitVerifiedAt DateTime?
+  
+  // EU Compliance (encrypted)
+  fullLegalName         String?   @db.Text
+  address               Json?
+  taxId                 String?   @db.Text
+  bankDetails           Json?
+  
+  // Stripe
+  stripeAccountId       String?
+  stripeAccountStatus   String?
+  
+  // Relations
+  services              Service[]
+  availabilities        Availability[]
+  bookings              Booking[]
+  payouts               Payout[]
+  earnings              Earning[]
+  
+  @@index([userId])
+  @@index([isVerified])
+}
+
+model Admin {
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  permissions     Json      @default("[]")
+  
+  @@index([userId])
+}
+
+model Event {
+  id              String    @id @default(cuid())
+  name            String
+  slug            String    @unique
+  description     String?   @db.Text
+  
+  venue           String
+  address         String
+  city            String
+  state           String?
+  country         String
+  postalCode      String
+  
+  startDate       DateTime
+  endDate         DateTime
+  timezone        String
+  
+  imageUrl        String?
+  isActive        Boolean   @default(true)
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  availabilities  Availability[]
+  bookings        Booking[]
+  
+  @@index([slug])
+  @@index([startDate, country])
+  @@index([isActive])
+}
+
+model Service {
+  id              String    @id @default(cuid())
+  stylistId       String
+  stylist         Stylist   @relation(fields: [stylistId], references: [id], onDelete: Cascade)
+  
+  name            String
+  description     String?
+  price           Decimal   @db.Decimal(10, 2)
+  duration        Int       // minutes
+  isActive        Boolean   @default(true)
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  bookings        Booking[]
+  
+  @@index([stylistId, isActive])
+}
+
+model Availability {
+  id              String    @id @default(cuid())
+  stylistId       String
+  stylist         Stylist   @relation(fields: [stylistId], references: [id], onDelete: Cascade)
+  eventId         String
+  event           Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  
+  date            DateTime  @db.Date
+  startTime       String    // "09:00"
+  endTime         String    // "17:00"
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@unique([stylistId, eventId, date])
+  @@index([eventId, date])
+}
+
+model Booking {
+  id                    String    @id @default(cuid())
+  bookingNumber         String    @unique @default(cuid())
+  
+  dancerId              String
+  dancer                User      @relation("DancerBookings", fields: [dancerId], references: [id])
+  stylistId             String
+  stylist               Stylist   @relation(fields: [stylistId], references: [id])
+  eventId               String
+  event                 Event     @relation(fields: [eventId], references: [id])
+  serviceId             String
+  service               Service   @relation(fields: [serviceId], references: [id])
+  
+  date                  DateTime  @db.Date
+  startTime             DateTime
+  endTime               DateTime
+  
+  // Pricing
+  servicePrice          Decimal   @db.Decimal(10, 2)
+  platformFee           Decimal   @db.Decimal(10, 2)
+  stylistPayout         Decimal   @db.Decimal(10, 2)
+  currency              String    @default("USD")
+  
+  // Payment
+  stripePaymentIntentId String?
+  stripeChargeId        String?
+  paymentStatus         PaymentStatus @default(PENDING)
+  paidAt                DateTime?
+  
+  // Status
+  status                BookingStatus @default(CONFIRMED)
+  cancelledAt           DateTime?
+  cancelReason          String?
+  completedAt           DateTime?
+  noShowAt              DateTime?
+  
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  
+  // Relations
+  payout                Payout?
+  
+  @@index([eventId, date])
+  @@index([stylistId, date])
+  @@index([dancerId, createdAt])
+  @@index([status])
+  @@index([paymentStatus])
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}
+
+enum BookingStatus {
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+model Payout {
+  id                    String    @id @default(cuid())
+  bookingId             String    @unique
+  booking               Booking   @relation(fields: [bookingId], references: [id])
+  stylistId             String
+  stylist               Stylist   @relation(fields: [stylistId], references: [id])
+  
+  amount                Decimal   @db.Decimal(10, 2)
+  currency              String
+  
+  stripeTransferId      String?
+  stripeTransferStatus  String?
+  
+  status                PayoutStatus @default(PENDING)
+  scheduledFor          DateTime
+  processedAt           DateTime?
+  failedAt              DateTime?
+  failureReason         String?
+  
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  
+  @@index([stylistId])
+  @@index([status])
+  @@index([scheduledFor])
+}
+
+enum PayoutStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+model Earning {
+  id              String    @id @default(cuid())
+  stylistId       String
+  stylist         Stylist   @relation(fields: [stylistId], references: [id])
+  
+  year            Int
+  month           Int
+  amount          Decimal   @db.Decimal(10, 2)
+  currency        String
+  country         String
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@unique([stylistId, year, month, country])
+  @@index([stylistId, year])
+}
+
+model AuditLog {
+  id              String    @id @default(cuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id])
+  
+  action          String
+  entityType      String?
+  entityId        String?
+  details         Json?
+  ipAddress       String?
+  userAgent       String?
+  
+  createdAt       DateTime  @default(now())
+  
+  @@index([userId, createdAt])
+  @@index([entityType, entityId])
+}
+
+// NextAuth models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+}
