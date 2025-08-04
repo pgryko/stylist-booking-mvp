@@ -1,143 +1,372 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# The Independent Studio
 
-## Getting Started
+<p align="center">
+  <strong>Connecting beauty professionals with dancers at competitions nationwide</strong>
+</p>
 
-First, run the development server:
+<p align="center">
+  <a href="#features">Features</a> •
+  <a href="#tech-stack">Tech Stack</a> •
+  <a href="#getting-started">Getting Started</a> •
+  <a href="#architecture">Architecture</a> •
+  <a href="#contributing">Contributing</a> •
+  <a href="#license">License</a>
+</p>
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+<p align="center">
+  <img src="https://img.shields.io/badge/Phase-1%20Foundation%20(95%25)-blue" alt="Development Phase" />
+  <img src="https://img.shields.io/badge/Next.js-14.2-black" alt="Next.js Version" />
+  <img src="https://img.shields.io/badge/TypeScript-5.0-blue" alt="TypeScript Version" />
+  <img src="https://img.shields.io/badge/Node-18%2B-green" alt="Node Version" />
+  <img src="https://img.shields.io/badge/License-Proprietary-red" alt="License" />
+</p>
+
+## 🎯 Overview
+
+The Independent Studio is a specialized marketplace platform that connects professional beauty stylists with competitive dancers at dance competitions across the country. We're solving the critical challenge dancers face in finding reliable, skilled hair and makeup services at competition venues while providing stylists with a steady stream of bookings and professional business tools.
+
+### The Problem
+
+- **Dancers** struggle to find quality stylists at competition venues, often relying on Facebook groups and word-of-mouth
+- **Stylists** lack professional tools to manage bookings, payments, and taxes for their mobile beauty businesses
+- **Event organizers** have no centralized system to coordinate beauty services for their competitions
+
+### Our Solution
+
+A comprehensive marketplace platform that provides:
+
+- 🔍 **Smart matching** between dancers and stylists based on location, services, and availability
+- 📅 **Intelligent scheduling** with conflict prevention and competition event integration
+- 💳 **Secure payments** through Stripe Connect with automated tax reporting
+- ⭐ **Trust & safety** through verified profiles, reviews, and professional standards
+- 📱 **Mobile-first design** optimized for on-the-go usage at competition venues
+
+## ✨ Features
+
+### For Dancers
+
+- Browse and book verified stylists by competition location
+- View portfolios, reviews, and real-time availability
+- Secure payment processing with booking protection
+- Manage all bookings in one dashboard
+- Receive automated reminders and updates
+
+### For Stylists
+
+- Professional business profile with portfolio showcase
+- Dynamic pricing with event multipliers
+- Automated scheduling and conflict prevention
+- Integrated payment processing with 75% payout (25% platform fee)
+- Tax reporting compliance (1099-K for US, DAC7 for EU)
+- Business analytics and performance insights
+
+### For Event Organizers
+
+- List competitions with venue details
+- Coordinate stylist services for participants
+- Access to verified professional network
+- Event-specific reporting and analytics
+
+## 🚀 Tech Stack
+
+### Frontend
+
+- **Framework**: [Next.js 14.2](https://nextjs.org/) with App Router
+- **Language**: [TypeScript](https://www.typescriptlang.org/) with strict mode
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/) with custom design system
+- **State Management**: React Server Components + Client state
+- **Forms**: [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/) validation
+
+### Backend
+
+- **API**: Next.js API Routes with REST architecture
+- **Database**: [PostgreSQL](https://www.postgresql.org/) via [Supabase](https://supabase.com/)
+- **ORM**: [Prisma](https://www.prisma.io/) with type-safe queries
+- **Authentication**: [NextAuth.js v5](https://authjs.dev/) with JWT + RBAC
+- **File Storage**: [Cloudinary](https://cloudinary.com/) for images
+
+### Infrastructure
+
+- **Hosting**: [Vercel](https://vercel.com/) with edge functions
+- **Payments**: [Stripe Connect](https://stripe.com/connect) for marketplace
+- **Email**: [Resend](https://resend.com/) with React Email templates
+- **Monitoring**: [Sentry](https://sentry.io/) error tracking
+- **Analytics**: Vercel Analytics + Custom events
+
+### Development
+
+- **Package Manager**: npm with lockfile
+- **Testing**: [Jest](https://jestjs.io/) + [React Testing Library](https://testing-library.com/react)
+- **Linting**: ESLint with Next.js config
+- **Formatting**: Prettier with consistent style
+- **Git Hooks**: Husky + lint-staged
+- **CI/CD**: GitHub Actions with comprehensive workflows
+
+## 🏗️ Architecture
+
+```mermaid
+graph TB
+    subgraph "Client Layer"
+        A[Next.js Frontend]
+        B[Mobile PWA]
+    end
+
+    subgraph "Application Layer"
+        C[Next.js API Routes]
+        D[NextAuth.js]
+        E[Stripe Connect]
+    end
+
+    subgraph "Data Layer"
+        F[PostgreSQL/Supabase]
+        G[Cloudinary CDN]
+        H[Redis Cache]
+    end
+
+    subgraph "External Services"
+        I[Resend Email]
+        J[Stripe Payments]
+        K[Sentry Monitoring]
+    end
+
+    A --> C
+    B --> C
+    C --> D
+    C --> E
+    C --> F
+    C --> G
+    C --> H
+    E --> J
+    C --> I
+    A --> K
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Database Schema
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Our database consists of 13 interconnected models:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **User/Auth**: User, Dancer, Stylist, Admin (role-based profiles)
+- **Events**: Event, Availability (competition and scheduling)
+- **Services**: Service, Booking (service catalog and reservations)
+- **Payments**: Payout, Earning (financial transactions and reporting)
+- **Compliance**: AuditLog, GDPR fields (legal and regulatory)
 
-## Learn More
+See [prisma/schema.prisma](./prisma/schema.prisma) for complete schema definition.
 
-To learn more about Next.js, take a look at the following resources:
+## 🚀 Getting Started
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Prerequisites
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Node.js 18+ and npm
+- PostgreSQL database (via Supabase)
+- Stripe account (for payments)
+- Cloudinary account (for images)
 
-## Deploy on Vercel
+### Quick Start
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. **Clone the repository**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   ```bash
+   git clone https://github.com/your-org/stylist-booking-mvp.git
+   cd stylist-booking-mvp
+   ```
 
-## CI/CD Pipeline
+2. **Install dependencies**
 
-This project includes a comprehensive CI/CD pipeline with GitHub Actions:
+   ```bash
+   npm install
+   ```
 
-### Workflows
+3. **Set up environment variables**
 
-- **🔄 CI (`ci.yml`)**: Runs on every push and PR
-  - Tests across Node.js 18.x and 20.x
-  - Linting and type checking
-  - Unit tests with coverage
-  - Security audit
-  - Code quality analysis with SonarCloud
+   ```bash
+   cp .env.local.example .env.local
+   # Edit .env.local with your service credentials
+   ```
 
-- **🚀 Deployment (`deployment.yml`)**: Deploys to Vercel on main branch
-  - Automatic deployment after successful CI
-  - Production environment setup
-  - Deployment notifications
+4. **Set up the database**
 
-- **🔍 PR Checks (`pr-checks.yml`)**: Additional validation for PRs
-  - Merge conflict detection
-  - Bundle size analysis
-  - Accessibility checks
-  - PR size validation
-  - TODO/FIXME comment detection
+   ```bash
+   # Create Supabase project and add DATABASE_URL to .env.local
+   npx prisma migrate dev
+   npx prisma generate
+   npm run db:seed  # Optional: seed with test data
+   ```
 
-- **📦 Release (`release.yml`)**: Automated releases on version tags
-  - Changelog generation
-  - GitHub release creation
-  - Production deployment
-  - Slack notifications
+5. **Start development server**
 
-### Available Scripts
+   ```bash
+   npm run dev
+   ```
 
-```bash
-# Development
-npm run dev              # Start development server
-npm run build           # Build for production
-npm run start           # Start production server
+6. **Open the application**
+   ```
+   http://localhost:3000
+   ```
 
-# Testing
-npm run test            # Run tests
-npm run test:watch      # Run tests in watch mode
-npm run test:coverage   # Run tests with coverage
-npm run test:ci         # Run tests for CI (no watch)
+### Essential Environment Variables
 
-# Code Quality
-npm run lint            # Run ESLint
-npm run lint:fix        # Fix ESLint issues
-npm run type-check      # Run TypeScript compiler
+```env
+# Database (Supabase)
+DATABASE_URL="postgresql://..."
 
-# Database
-npm run db:generate     # Generate Prisma client
-npm run db:migrate      # Run database migrations
-npm run db:reset        # Reset database
-npm run db:seed         # Seed database
-npm run db:studio       # Open Prisma Studio
+# Authentication
+NEXTAUTH_SECRET="generate-secret-key"
+NEXTAUTH_URL="http://localhost:3000"
 
-# Security
-npm run security:audit  # Run security audit
+# Stripe
+STRIPE_SECRET_KEY="sk_test_..."
+STRIPE_PUBLISHABLE_KEY="pk_test_..."
+
+# Email (Resend)
+RESEND_API_KEY="re_..."
+
+# File Storage (Cloudinary)
+CLOUDINARY_URL="cloudinary://..."
 ```
 
-### Setting Up CI/CD
+See [QUICK-START.md](./QUICK-START.md) for detailed setup instructions.
 
-1. **Repository Secrets**: Add these secrets to your GitHub repository:
+## 📖 Documentation
 
-   ```
-   NEXTAUTH_SECRET=your-nextauth-secret
-   NEXTAUTH_URL=https://your-domain.com
-   VERCEL_TOKEN=your-vercel-token
-   ORG_ID=your-vercel-org-id
-   PROJECT_ID=your-vercel-project-id
-   SONAR_TOKEN=your-sonarcloud-token
-   SLACK_WEBHOOK=your-slack-webhook-url
-   ```
+- **[TODO.md](./TODO.md)** - Current project status and task tracking
+- **[ROADMAP.md](./ROADMAP.md)** - Strategic vision and development phases
+- **[CURRENT-SPRINT.md](./CURRENT-SPRINT.md)** - This week's priorities and tasks
+- **[Phase 1: Foundation](./docs/PHASE-01-FOUNDATION.md)** - Infrastructure setup details
+- **[Phase 2: Design System](./docs/PHASE-02-DESIGN-SYSTEM.md)** - UI/UX specifications
+- **[QUICK-START.md](./QUICK-START.md)** - Developer onboarding guide
 
-2. **SonarCloud Setup**:
-   - Create account at [sonarcloud.io](https://sonarcloud.io)
-   - Import your repository
-   - Update `sonar-project.properties` with your project key
+## 🧪 Testing
 
-3. **Dependabot**: Automatically creates PRs for dependency updates
-   - Runs weekly on Mondays
-   - Ignores major version updates for core dependencies
-   - Includes security updates
+```bash
+# Run all tests
+npm test
 
-### Branch Protection
+# Run tests in watch mode
+npm run test:watch
 
-Recommended branch protection rules for `main`:
+# Run tests with coverage
+npm run test:coverage
 
-- ✅ Require status checks to pass before merging
-- ✅ Require branches to be up to date before merging
-- ✅ Require pull request reviews before merging
-- ✅ Dismiss stale PR approvals when new commits are pushed
-- ✅ Restrict pushes that create files larger than 100 MB
+# Run type checking
+npm run type-check
 
-### Quality Gates
+# Run linting
+npm run lint
+```
 
-The CI pipeline enforces:
+Our testing strategy includes:
 
-- 📊 Code coverage minimum (configurable)
-- 🔒 Security vulnerability scanning
-- 📝 Code quality metrics via SonarCloud
-- 🎨 Code formatting with Prettier
-- 🔍 Linting with ESLint
-- 📦 Bundle size monitoring
-- ♿ Accessibility standards
+- Unit tests for utilities and components
+- Integration tests for API routes
+- E2E tests for critical user flows (coming in Phase 3)
+- Accessibility testing with jest-axe
+
+## 🚢 Deployment
+
+The application is configured for deployment on Vercel:
+
+```bash
+# Build for production
+npm run build
+
+# Preview production build locally
+npm run start
+```
+
+### CI/CD Pipeline
+
+Our GitHub Actions workflow includes:
+
+- 🧪 **Testing**: Multi-version Node.js testing matrix
+- 🔍 **Code Quality**: ESLint, Prettier, TypeScript checks
+- 🔒 **Security**: Dependency audits and vulnerability scanning
+- 📊 **Coverage**: Code coverage reporting with Codecov
+- 🚀 **Deployment**: Automated Vercel deployments
+
+See [.github/workflows](./.github/workflows) for complete CI/CD configuration.
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guidelines](./CONTRIBUTING.md) for details.
+
+### Development Workflow
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes with proper commits
+4. Run tests and ensure quality (`npm test && npm run lint`)
+5. Push to your fork (`git push origin feature/amazing-feature`)
+6. Open a Pull Request with detailed description
+
+### Commit Convention
+
+We follow [Conventional Commits](https://www.conventionalcommits.org/):
+
+- `feat:` New features
+- `fix:` Bug fixes
+- `docs:` Documentation changes
+- `style:` Code style changes (formatting, etc)
+- `refactor:` Code refactoring
+- `test:` Test additions or modifications
+- `chore:` Maintenance tasks
+
+## 📊 Project Status
+
+### Current Phase: Foundation (95% Complete)
+
+- ✅ Next.js setup with TypeScript
+- ✅ Database schema and Prisma ORM
+- ✅ Authentication with NextAuth.js
+- ✅ CI/CD pipeline with GitHub Actions
+- ⏳ External service integrations (Stripe, Supabase, etc.)
+
+### Next Phase: Design System & Core UI
+
+- 🎯 Custom Tailwind theme
+- 🎯 Reusable component library
+- 🎯 User registration flows
+- 🎯 Dashboard layouts
+
+See [TODO.md](./TODO.md) for detailed progress tracking.
+
+## 📈 Performance Targets
+
+- **Page Load**: < 2 seconds (LCP)
+- **Interactivity**: < 100ms (FID)
+- **API Response**: < 200ms average
+- **Uptime**: 99.9% SLA
+- **Test Coverage**: > 80%
+
+## 🔐 Security
+
+- JWT-based authentication with secure httpOnly cookies
+- Role-based access control (RBAC) with three user types
+- Input validation and sanitization with Zod
+- SQL injection prevention via Prisma ORM
+- XSS protection with React's built-in escaping
+- CSRF protection with SameSite cookies
+- Rate limiting on authentication endpoints
+- Automated security scanning in CI/CD
+
+## 📄 License
+
+This project is proprietary software. All rights reserved.
+
+© 2024 The Independent Studio. Unauthorized copying, modification, or distribution is prohibited.
+
+## 🙏 Acknowledgments
+
+- Dance competition community for invaluable feedback
+- Beauty professionals who shaped our vision
+- Open source projects that power our platform
+
+## 📞 Contact
+
+- **Technical Issues**: [GitHub Issues](https://github.com/your-org/stylist-booking-mvp/issues)
+- **Business Inquiries**: contact@theindependentstudio.com
+- **Security Reports**: security@theindependentstudio.com
+
+---
+
+<p align="center">Built with ❤️ for the dance community</p>
