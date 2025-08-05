@@ -4,13 +4,13 @@ import { getEventBySlug } from '@/lib/events'
 import { EventDetailClient } from '@/components/events/event-detail-client'
 
 interface EventDetailPageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 export default async function EventDetailPage({ params }: EventDetailPageProps) {
-  const { slug } = params
+  const { slug } = await params
 
   if (!slug) {
     notFound()
@@ -28,7 +28,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
 
 // Generate metadata for SEO
 export async function generateMetadata({ params }: EventDetailPageProps): Promise<Metadata> {
-  const { slug } = params
+  const { slug } = await params
 
   if (!slug) {
     return {

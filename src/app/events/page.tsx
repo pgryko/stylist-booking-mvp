@@ -135,9 +135,5 @@ export default function EventsPage() {
   )
 }
 
-// Add metadata for SEO
-export const metadata = {
-  title: 'Dance Events | The Independent Studio',
-  description:
-    'Find dance competitions and connect with professional stylists. Browse upcoming events, view details, and book styling services.',
-}
+// Note: Metadata cannot be exported from client components
+// SEO metadata should be handled by a parent server component or layout

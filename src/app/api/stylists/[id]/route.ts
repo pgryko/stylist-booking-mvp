@@ -14,16 +14,16 @@ const stylistUpdateSchema = z.object({
   yearsExperience: z.number().int().min(0).max(50).optional(),
 })
 
-interface RouteParams {
-  params: {
+interface RouteContext {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 // GET /api/stylists/[id] - Get specific stylist profile
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(request: NextRequest, { params }: RouteContext) {
   try {
-    const { id } = params
+    const { id } = await params
 
     if (!id) {
       return NextResponse.json({ error: 'Stylist ID is required' }, { status: 400 })
@@ -175,7 +175,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 }
 
 // PUT /api/stylists/[id] - Update stylist profile (authenticated stylist only)
-export async function PUT(request: NextRequest, { params }: RouteParams) {
+export async function PUT(request: NextRequest, { params }: RouteContext) {
   try {
     const session = await auth()
 
@@ -184,7 +184,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
 
-    const { id } = params
+    const { id } = await params
     const body = await request.json()
 
     if (!id) {

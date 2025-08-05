@@ -4,9 +4,9 @@ import { notFound } from 'next/navigation'
 import { StylistProfileClient } from '@/components/stylists/stylist-profile-client'
 
 interface StylistProfilePageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 // Server-side data fetching
@@ -34,7 +34,7 @@ async function getStylist(id: string) {
 }
 
 export default async function StylistProfilePage({ params }: StylistProfilePageProps) {
-  const { id } = params
+  const { id } = await params
 
   if (!id) {
     notFound()
@@ -55,7 +55,7 @@ export default async function StylistProfilePage({ params }: StylistProfilePageP
 
 // Generate metadata for SEO
 export async function generateMetadata({ params }: StylistProfilePageProps): Promise<Metadata> {
-  const { id } = params
+  const { id } = await params
 
   try {
     const stylist = await getStylist(id)

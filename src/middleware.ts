@@ -11,7 +11,7 @@ export default auth((req) => {
 
   // Role-based routes
   const adminRoutes = ['/admin']
-  const stylistRoutes = ['/stylist']
+  const stylistRoutes = ['/stylist', '/dashboard']
   const dancerRoutes = ['/dancer', '/booking']
 
   if (!isLoggedIn && !isPublicRoute) {

@@ -4,7 +4,6 @@ import React, { useState, useCallback, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ServiceSearch } from '@/components/services/service-search'
 import { ServiceGrid } from '@/components/services/service-grid'
-import { Metadata } from 'next'
 
 // Client-side types for API response
 interface ServiceData {
@@ -271,16 +270,5 @@ export default function ServicesPage() {
   )
 }
 
-// Metadata for SEO
-export const metadata: Metadata = {
-  title: 'Professional Beauty Services | The Independent Studio',
-  description:
-    'Browse and book professional hair and makeup services for dance competitions. Compare prices, view portfolios, and connect with verified stylists.',
-  keywords:
-    'beauty services, hair styling, makeup artist, dance competition services, professional stylists',
-  openGraph: {
-    title: 'Professional Beauty Services | The Independent Studio',
-    description: 'Browse and book professional hair and makeup services for dance competitions.',
-    type: 'website',
-  },
-}
+// Note: Metadata cannot be exported from client components
+// SEO metadata should be handled by a parent server component or layout

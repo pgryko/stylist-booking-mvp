@@ -62,11 +62,11 @@ export async function GET(request: NextRequest) {
     // Search filter
     if (search) {
       where.OR = [
-        { name: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } },
+        { name: { contains: search } },
+        { description: { contains: search } },
         {
           stylist: {
-            displayName: { contains: search, mode: 'insensitive' },
+            displayName: { contains: search },
           },
         },
       ]

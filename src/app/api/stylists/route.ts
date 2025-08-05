@@ -25,15 +25,15 @@ export async function GET(request: NextRequest) {
     // Search filter across multiple fields
     if (search) {
       where.OR = [
-        { displayName: { contains: search, mode: 'insensitive' } },
-        { bio: { contains: search, mode: 'insensitive' } },
-        { specialty: { contains: search, mode: 'insensitive' } },
+        { displayName: { contains: search } },
+        { bio: { contains: search } },
+        { specialty: { contains: search } },
       ]
     }
 
     // Specialty filter
     if (specialty) {
-      where.specialty = { contains: specialty, mode: 'insensitive' }
+      where.specialty = { contains: specialty }
     }
 
     // Verification filter

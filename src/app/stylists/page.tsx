@@ -4,7 +4,6 @@ import React, { useState, useCallback, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { StylistSearch } from '@/components/stylists/stylist-search'
 import { StylistGrid } from '@/components/stylists/stylist-grid'
-import { Metadata } from 'next'
 
 // Client-side types for API response
 interface StylistData {
@@ -244,16 +243,5 @@ export default function StylistsPage() {
   )
 }
 
-// Metadata for SEO
-export const metadata: Metadata = {
-  title: 'Professional Dance Stylists | The Independent Studio',
-  description:
-    'Find and book verified hair and makeup artists for dance competitions. Browse portfolios, compare prices, and connect with professional stylists worldwide.',
-  keywords:
-    'dance stylists, competition hair, makeup artists, dance competitions, professional stylists',
-  openGraph: {
-    title: 'Professional Dance Stylists | The Independent Studio',
-    description: 'Find and book verified hair and makeup artists for dance competitions.',
-    type: 'website',
-  },
-}
+// Note: Metadata cannot be exported from client components
+// SEO metadata should be handled by a parent server component or layout

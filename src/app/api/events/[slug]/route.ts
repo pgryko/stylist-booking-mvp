@@ -33,16 +33,16 @@ const eventUpdateSchema = z.object({
   isActive: z.boolean().optional(),
 })
 
-interface RouteParams {
-  params: {
+interface RouteContext {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 // GET /api/events/[slug] - Get specific event by slug
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(request: NextRequest, { params }: RouteContext) {
   try {
-    const { slug } = params
+    const { slug } = await params
 
     if (!slug) {
       return NextResponse.json({ error: 'Event slug is required' }, { status: 400 })
@@ -142,7 +142,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 }
 
 // PUT /api/events/[slug] - Update event (admin only)
-export async function PUT(request: NextRequest, { params }: RouteParams) {
+export async function PUT(request: NextRequest, { params }: RouteContext) {
   try {
     const session = await auth()
 
@@ -151,7 +151,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'Unauthorized - Admin access required' }, { status: 401 })
     }
 
-    const { slug } = params
+    const { slug } = await params
     const body = await request.json()
 
     if (!slug) {
@@ -229,7 +229,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 }
 
 // DELETE /api/events/[slug] - Delete event (admin only)
-export async function DELETE(request: NextRequest, { params }: RouteParams) {
+export async function DELETE(request: NextRequest, { params }: RouteContext) {
   try {
     const session = await auth()
 
@@ -238,7 +238,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'Unauthorized - Admin access required' }, { status: 401 })
     }
 
-    const { slug } = params
+    const { slug } = await params
 
     if (!slug) {
       return NextResponse.json({ error: 'Event slug is required' }, { status: 400 })

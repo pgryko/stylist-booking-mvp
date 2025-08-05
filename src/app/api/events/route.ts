@@ -53,17 +53,17 @@ export async function GET(request: NextRequest) {
     // Search filter
     if (search) {
       where.OR = [
-        { name: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } },
-        { venue: { contains: search, mode: 'insensitive' } },
-        { city: { contains: search, mode: 'insensitive' } },
+        { name: { contains: search } },
+        { description: { contains: search } },
+        { venue: { contains: search } },
+        { city: { contains: search } },
       ]
     }
 
     // Location filters
-    if (country) where.country = { contains: country, mode: 'insensitive' }
-    if (state) where.state = { contains: state, mode: 'insensitive' }
-    if (city) where.city = { contains: city, mode: 'insensitive' }
+    if (country) where.country = { contains: country }
+    if (state) where.state = { contains: state }
+    if (city) where.city = { contains: city }
 
     // Upcoming events filter
     if (upcoming) {

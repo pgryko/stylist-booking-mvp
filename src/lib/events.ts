@@ -59,17 +59,17 @@ export async function getEvents(filters: EventFilters = {}): Promise<PaginatedEv
   // Search filter
   if (search) {
     where.OR = [
-      { name: { contains: search, mode: 'insensitive' } },
-      { description: { contains: search, mode: 'insensitive' } },
-      { venue: { contains: search, mode: 'insensitive' } },
-      { city: { contains: search, mode: 'insensitive' } },
+      { name: { contains: search } },
+      { description: { contains: search } },
+      { venue: { contains: search } },
+      { city: { contains: search } },
     ]
   }
 
   // Location filters
-  if (country) where.country = { contains: country, mode: 'insensitive' }
-  if (state) where.state = { contains: state, mode: 'insensitive' }
-  if (city) where.city = { contains: city, mode: 'insensitive' }
+  if (country) where.country = { contains: country }
+  if (state) where.state = { contains: state }
+  if (city) where.city = { contains: city }
 
   // Upcoming events filter
   if (upcoming) {
@@ -245,7 +245,7 @@ export async function getEventStates(country: string) {
     where: {
       isActive: true,
       startDate: { gte: new Date() },
-      country: { contains: country, mode: 'insensitive' },
+      country: { contains: country },
       state: { not: null },
     },
     _count: {
@@ -269,11 +269,11 @@ export async function getEventCities(country: string, state?: string) {
   const where: Record<string, unknown> = {
     isActive: true,
     startDate: { gte: new Date() },
-    country: { contains: country, mode: 'insensitive' },
+    country: { contains: country },
   }
 
   if (state) {
-    where.state = { contains: state, mode: 'insensitive' }
+    where.state = { contains: state }
   }
 
   const cities = await prisma.event.groupBy({
