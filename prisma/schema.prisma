@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -61,7 +61,7 @@ model Stylist {
   
   // Public profile
   displayName           String
-  bio                   String    @db.Text
+  bio                   String
   profileImageUrl       String?
   portfolioImages       Json      @default("[]")
   specialty             String
@@ -77,9 +77,9 @@ model Stylist {
   usWorkPermitVerifiedAt DateTime?
   
   // EU Compliance (encrypted)
-  fullLegalName         String?   @db.Text
+  fullLegalName         String?
   address               Json?
-  taxId                 String?   @db.Text
+  taxId                 String?
   bankDetails           Json?
   
   // Stripe
@@ -111,7 +111,7 @@ model Event {
   id              String    @id @default(cuid())
   name            String
   slug            String    @unique
-  description     String?   @db.Text
+  description     String?
   
   venue           String
   address         String
@@ -146,7 +146,7 @@ model Service {
   
   name            String
   description     String?
-  price           Decimal   @db.Decimal(10, 2)
+  price           Float
   duration        Int       // minutes
   isActive        Boolean   @default(true)
   
@@ -166,7 +166,7 @@ model Availability {
   eventId         String
   event           Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
   
-  date            DateTime  @db.Date
+  date            DateTime
   startTime       String    // "09:00"
   endTime         String    // "17:00"
   
@@ -190,14 +190,14 @@ model Booking {
   serviceId             String
   service               Service   @relation(fields: [serviceId], references: [id])
   
-  date                  DateTime  @db.Date
+  date                  DateTime
   startTime             DateTime
   endTime               DateTime
   
   // Pricing
-  servicePrice          Decimal   @db.Decimal(10, 2)
-  platformFee           Decimal   @db.Decimal(10, 2)
-  stylistPayout         Decimal   @db.Decimal(10, 2)
+  servicePrice          Float
+  platformFee           Float
+  stylistPayout         Float
   currency              String    @default("USD")
   
   // Payment
@@ -248,7 +248,7 @@ model Payout {
   stylistId             String
   stylist               Stylist   @relation(fields: [stylistId], references: [id])
   
-  amount                Decimal   @db.Decimal(10, 2)
+  amount                Float
   currency              String
   
   stripeTransferId      String?
@@ -283,7 +283,7 @@ model Earning {
   
   year            Int
   month           Int
-  amount          Decimal   @db.Decimal(10, 2)
+  amount          Float
   currency        String
   country         String
   
@@ -319,12 +319,12 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
   
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
