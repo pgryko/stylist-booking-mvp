@@ -124,8 +124,55 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Time slot is already booked' }, { status: 409 })
     }
 
-    // Calculate pricing
-    const servicePrice = service.price
+    // Calculate dynamic pricing
+    const currentDate = new Date()
+    const bookingDate = new Date(date)
+    const advanceBookingDays = Math.floor(
+      (bookingDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)
+    )
+
+    // Get dynamic pricing calculation
+    let finalPrice = service.price
+    let appliedRules: Array<{
+      id: string
+      name: string
+      ruleType: string
+      modifierType: string
+      modifierValue: number
+      previousPrice: number
+      newPrice: number
+      priceChange: number
+    }> = []
+
+    try {
+      const pricingResponse = await fetch(`${process.env.NEXTAUTH_URL}/api/pricing/calculate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          serviceId,
+          eventId,
+          date,
+          startTime,
+          endTime,
+          advanceBookingDays: Math.max(0, advanceBookingDays),
+        }),
+      })
+
+      if (pricingResponse.ok) {
+        const pricingData = await pricingResponse.json()
+        finalPrice = pricingData.finalPrice
+        appliedRules = pricingData.appliedRules || []
+      } else {
+        console.warn('Failed to get dynamic pricing, using base price')
+      }
+    } catch (error) {
+      console.warn('Error calculating dynamic pricing, using base price:', error)
+    }
+
+    // Calculate fees based on final price
+    const servicePrice = finalPrice
     const platformFeeRate = 0.15 // 15% platform fee
     const platformFee = Math.round(servicePrice * platformFeeRate * 100) // in cents
     const stylistPayout = Math.round(servicePrice * (1 - platformFeeRate) * 100) // in cents
@@ -193,9 +240,12 @@ export async function POST(request: NextRequest) {
         endTime,
       },
       pricing: {
-        servicePrice,
+        basePrice: service.price,
+        finalPrice: servicePrice,
+        priceChange: servicePrice - service.price,
         platformFee: platformFee / 100,
         total: servicePrice,
+        appliedRules,
       },
     })
   } catch (error) {

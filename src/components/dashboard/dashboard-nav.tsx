@@ -14,6 +14,7 @@ import {
   TrendingUp,
   HelpCircle,
   MessageSquare,
+  Banknote,
 } from 'lucide-react'
 
 const navigation = [
@@ -28,6 +29,12 @@ const navigation = [
     href: '/dashboard/services',
     icon: DollarSign,
     description: 'Manage your service offerings',
+  },
+  {
+    name: 'Pricing',
+    href: '/dashboard/pricing',
+    icon: TrendingUp,
+    description: 'Dynamic pricing rules and optimization',
   },
   {
     name: 'Profile',
@@ -50,7 +57,7 @@ const navigation = [
   {
     name: 'Earnings',
     href: '/dashboard/earnings',
-    icon: TrendingUp,
+    icon: Banknote,
     description: 'View your earnings and payouts',
   },
   {

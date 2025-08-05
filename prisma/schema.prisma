@@ -92,6 +92,7 @@ model Stylist {
   bookings              Booking[]
   payouts               Payout[]
   earnings              Earning[]
+  pricingRules          PricingRule[]
   
   @@index([userId])
   @@index([isVerified])
@@ -155,8 +156,48 @@ model Service {
   
   // Relations
   bookings        Booking[]
+  pricingRules    PricingRule[]
   
   @@index([stylistId, isActive])
+}
+
+model PricingRule {
+  id              String    @id @default(cuid())
+  serviceId       String
+  service         Service   @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  stylistId       String
+  stylist         Stylist   @relation(fields: [stylistId], references: [id], onDelete: Cascade)
+  
+  name            String
+  description     String?
+  ruleType        PricingRuleType
+  modifierType    PricingModifierType
+  modifierValue   Float     // percentage (0.15 = 15%) or fixed amount
+  priority        Int       @default(0)
+  isActive        Boolean   @default(true)
+  
+  // Rule conditions (JSON)
+  conditions      String    @default("{}")
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@index([serviceId, isActive])
+  @@index([stylistId, isActive])
+}
+
+enum PricingRuleType {
+  TIME_BASED      // Peak hours, weekends
+  ADVANCE_BOOKING // Early bird discounts/premiums
+  EVENT_BASED     // Event type/size modifiers
+  SEASONAL        // Seasonal adjustments
+  GROUP_SIZE      // Based on booking duration/complexity
+  DEMAND_BASED    // Based on availability/demand
+}
+
+enum PricingModifierType {
+  PERCENTAGE      // Multiply by percentage
+  FIXED_AMOUNT    // Add/subtract fixed amount
 }
 
 model Availability {
