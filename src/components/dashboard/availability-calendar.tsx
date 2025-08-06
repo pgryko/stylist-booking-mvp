@@ -110,13 +110,6 @@ export function AvailabilityCalendar() {
     fetchEvents()
   }, [])
 
-  // Load availabilities when event or month changes
-  useEffect(() => {
-    if (selectedEvent) {
-      loadAvailabilities()
-    }
-  }, [selectedEvent, currentMonth, loadAvailabilities])
-
   const loadAvailabilities = useCallback(async () => {
     try {
       const monthStr = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}`
@@ -131,6 +124,13 @@ export function AvailabilityCalendar() {
       setMessage({ type: 'error', text: 'Failed to load availabilities' })
     }
   }, [selectedEvent, currentMonth])
+
+  // Load availabilities when event or month changes
+  useEffect(() => {
+    if (selectedEvent) {
+      loadAvailabilities()
+    }
+  }, [selectedEvent, currentMonth, loadAvailabilities])
 
   const handleAddAvailability = () => {
     setFormData({

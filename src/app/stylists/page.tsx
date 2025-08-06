@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useState, useCallback, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { StylistSearch } from '@/components/stylists/stylist-search'
 import { StylistGrid } from '@/components/stylists/stylist-grid'
@@ -67,7 +67,7 @@ interface SearchParams {
   sortOrder: string
 }
 
-export default function StylistsPage() {
+function StylistsContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -240,6 +240,44 @@ export default function StylistsPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function StylistsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gray-50">
+          <div className="bg-white shadow-sm">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+              <div className="text-center">
+                <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl">
+                  Find Professional Stylists
+                </h1>
+                <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">Loading stylists...</p>
+              </div>
+            </div>
+          </div>
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+            <StylistGrid
+              stylists={[]}
+              pagination={{
+                page: 1,
+                limit: 12,
+                totalCount: 0,
+                totalPages: 0,
+                hasNextPage: false,
+                hasPrevPage: false,
+              }}
+              onPageChange={() => {}}
+              isLoading={true}
+            />
+          </div>
+        </div>
+      }
+    >
+      <StylistsContent />
+    </Suspense>
   )
 }
 

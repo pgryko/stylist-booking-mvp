@@ -20,7 +20,13 @@ export const EventGrid: React.FC<EventGridProps> = ({
   onPageChange,
   className,
 }) => {
-  const { page, totalPages, hasNextPage, hasPrevPage, totalCount } = pagination
+  const { page, totalPages, hasNextPage, hasPrevPage, totalCount } = pagination || {
+    page: 1,
+    totalPages: 0,
+    hasNextPage: false,
+    hasPrevPage: false,
+    totalCount: 0,
+  }
 
   // Handle page navigation
   const handlePageChange = (newPage: number) => {

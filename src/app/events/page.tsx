@@ -7,8 +7,9 @@ import { EventSearch } from '@/components/events/event-search'
 import { EventGrid } from '@/components/events/event-grid'
 import { PaginatedEvents } from '@/lib/events'
 import { CalendarDays, TrendingUp } from 'lucide-react'
+import { Suspense } from 'react'
 
-export default function EventsPage() {
+function EventsContent() {
   const searchParams = useSearchParams()
   const [events, setEvents] = React.useState<PaginatedEvents | null>(null)
   const [loading, setLoading] = React.useState(true)
@@ -20,7 +21,7 @@ export default function EventsPage() {
       setLoading(true)
       setError(null)
 
-      const queryString = searchParams.toString()
+      const queryString = searchParams?.toString() || ''
       const response = await fetch(`/api/events?${queryString}`)
 
       if (!response.ok) {
@@ -44,7 +45,7 @@ export default function EventsPage() {
 
   // Handle page changes
   const handlePageChange = (page: number) => {
-    const params = new URLSearchParams(searchParams.toString())
+    const params = new URLSearchParams(searchParams?.toString() || '')
     params.set('page', page.toString())
     window.history.pushState(null, '', `?${params.toString()}`)
   }
@@ -67,28 +68,28 @@ export default function EventsPage() {
               </p>
             </div>
           </div>
-
-          {/* Quick Stats */}
-          {events && (
-            <div className="flex items-center gap-6 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <TrendingUp className="h-4 w-4" />
-                <span>{events.pagination.totalCount} total events</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CalendarDays className="h-4 w-4" />
-                <span>
-                  {events.filters.upcoming
-                    ? 'Upcoming events only'
-                    : 'All events (past and upcoming)'}
-                </span>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Search and Filters */}
         <EventSearch className="mb-8" />
+
+        {/* Quick Stats */}
+        {events && (
+          <div className="flex items-center gap-6 text-sm text-muted-foreground mb-6">
+            <div className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4" />
+              <span>{events.pagination.totalCount} total events</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <CalendarDays className="h-4 w-4" />
+              <span>
+                {events.filters.upcoming
+                  ? 'Upcoming events only'
+                  : 'All events (past and upcoming)'}
+              </span>
+            </div>
+          </div>
+        )}
 
         {/* Error State */}
         {error && (
@@ -104,7 +105,7 @@ export default function EventsPage() {
         )}
 
         {/* Events Grid */}
-        {events && (
+        {events ? (
           <EventGrid
             events={events.events}
             pagination={events.pagination}
@@ -112,10 +113,67 @@ export default function EventsPage() {
             loading={loading}
             onPageChange={handlePageChange}
           />
+        ) : (
+          <EventGrid
+            events={[]}
+            pagination={{
+              page: 1,
+              limit: 12,
+              totalCount: 0,
+              totalPages: 0,
+              hasNextPage: false,
+              hasPrevPage: false,
+            }}
+            filters={{}}
+            loading={loading}
+            onPageChange={handlePageChange}
+          />
         )}
+      </main>
+    </div>
+  )
+}
 
-        {/* Loading State (Initial Load) */}
-        {loading && !events && (
+// Force dynamic rendering to avoid prerendering issues
+export const dynamic = 'force-dynamic'
+
+export default function EventsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-background">
+          <div className="container mx-auto px-4 py-8">
+            <h1 className="text-3xl font-bold">Events</h1>
+            <p>Loading events...</p>
+          </div>
+        </div>
+      }
+    >
+      <EventsContent />
+    </Suspense>
+  )
+}
+
+/*
+export default function EventsPageOLD() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <main className="container mx-auto px-4 py-8">
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-r from-purple-600 to-gold-500">
+                <CalendarDays className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold tracking-tight">Dance Events</h1>
+                <p className="text-muted-foreground">
+                  Loading events...
+                </p>
+              </div>
+            </div>
+          </div>
           <EventGrid
             events={[]}
             pagination={{
@@ -129,11 +187,14 @@ export default function EventsPage() {
             filters={{}}
             loading={true}
           />
-        )}
-      </main>
-    </div>
+        </main>
+      </div>
+    }>
+      <EventsContent />
+    </Suspense>
   )
 }
+*/
 
 // Note: Metadata cannot be exported from client components
 // SEO metadata should be handled by a parent server component or layout

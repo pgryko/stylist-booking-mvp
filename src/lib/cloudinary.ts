@@ -49,12 +49,17 @@ export const cloudinaryHelpers = {
     options: {
       folder: string
       public_id?: string
-      transformation?: Record<string, string | number>[]
+      transformation?: Record<string, unknown>[]
       tags?: string[]
     }
   ) {
     try {
-      const result = await cloudinary.uploader.upload(imageData, {
+      // Convert Buffer to data URL if needed
+      const uploadData = Buffer.isBuffer(imageData)
+        ? `data:image/jpeg;base64,${imageData.toString('base64')}`
+        : imageData
+
+      const result = await cloudinary.uploader.upload(uploadData, {
         folder: options.folder,
         public_id: options.public_id,
         transformation: options.transformation,

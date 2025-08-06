@@ -23,7 +23,7 @@ const pricingRuleSchema = z.object({
     .max(10, 'Modifier value must be reasonable'),
   priority: z.number().int().min(0).max(100).default(0),
   isActive: z.boolean().default(true),
-  conditions: z.record(z.any()).default({}),
+  conditions: z.record(z.string(), z.any()).default({}),
 })
 
 // GET /api/dashboard/pricing-rules - Get pricing rules for stylist
@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
     const validationResult = pricingRuleSchema.safeParse(body)
     if (!validationResult.success) {
       return NextResponse.json(
-        { error: 'Validation failed', details: validationResult.error.errors },
+        { error: 'Validation failed', details: validationResult.error.issues },
         { status: 400 }
       )
     }

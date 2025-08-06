@@ -129,6 +129,22 @@ export function PricingManagement() {
   })
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
+  const loadPricingRules = useCallback(async () => {
+    try {
+      const url = selectedService
+        ? `/api/dashboard/pricing-rules?serviceId=${selectedService}`
+        : '/api/dashboard/pricing-rules'
+
+      const response = await fetch(url)
+      if (!response.ok) throw new Error('Failed to fetch pricing rules')
+      const data = await response.json()
+      setPricingRules(data.pricingRules)
+    } catch (error) {
+      console.error('Error loading pricing rules:', error)
+      setMessage({ type: 'error', text: 'Failed to load pricing rules' })
+    }
+  }, [selectedService])
+
   // Load services and pricing rules
   useEffect(() => {
     const loadData = async () => {
@@ -161,22 +177,6 @@ export function PricingManagement() {
       loadPricingRules()
     }
   }, [selectedService, loadPricingRules])
-
-  const loadPricingRules = useCallback(async () => {
-    try {
-      const url = selectedService
-        ? `/api/dashboard/pricing-rules?serviceId=${selectedService}`
-        : '/api/dashboard/pricing-rules'
-
-      const response = await fetch(url)
-      if (!response.ok) throw new Error('Failed to fetch pricing rules')
-      const data = await response.json()
-      setPricingRules(data.pricingRules)
-    } catch (error) {
-      console.error('Error loading pricing rules:', error)
-      setMessage({ type: 'error', text: 'Failed to load pricing rules' })
-    }
-  }, [selectedService])
 
   const handleAddRule = () => {
     setFormData({

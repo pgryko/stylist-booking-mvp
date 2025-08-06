@@ -58,7 +58,13 @@ export function ServiceGrid({
   isLoading = false,
   variant = 'default',
 }: ServiceGridProps) {
-  const { page, totalPages, hasNextPage, hasPrevPage, totalCount } = pagination
+  const { page, totalPages, hasNextPage, hasPrevPage, totalCount } = pagination || {
+    page: 1,
+    totalPages: 0,
+    hasNextPage: false,
+    hasPrevPage: false,
+    totalCount: 0,
+  }
 
   // Generate page numbers for pagination
   const getPageNumbers = () => {

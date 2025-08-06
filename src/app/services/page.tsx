@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useState, useCallback, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ServiceSearch } from '@/components/services/service-search'
 import { ServiceGrid } from '@/components/services/service-grid'
@@ -65,7 +65,7 @@ interface SearchParams {
   sortOrder: string
 }
 
-export default function ServicesPage() {
+function ServicesContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -267,6 +267,44 @@ export default function ServicesPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function ServicesPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gray-50">
+          <div className="bg-white shadow-sm">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+              <div className="text-center">
+                <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl">
+                  Hair & Makeup Services
+                </h1>
+                <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">Loading services...</p>
+              </div>
+            </div>
+          </div>
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+            <ServiceGrid
+              services={[]}
+              pagination={{
+                page: 1,
+                limit: 20,
+                totalCount: 0,
+                totalPages: 0,
+                hasNextPage: false,
+                hasPrevPage: false,
+              }}
+              onPageChange={() => {}}
+              isLoading={true}
+            />
+          </div>
+        </div>
+      }
+    >
+      <ServicesContent />
+    </Suspense>
   )
 }
 

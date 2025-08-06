@@ -122,7 +122,7 @@ export async function PUT(request: NextRequest) {
     const validationResult = profileUpdateSchema.safeParse(body)
     if (!validationResult.success) {
       return NextResponse.json(
-        { error: 'Validation failed', details: validationResult.error.errors },
+        { error: 'Validation failed', details: validationResult.error.issues },
         { status: 400 }
       )
     }
@@ -150,8 +150,8 @@ export async function PUT(request: NextRequest) {
         usWorkPermit: data.usWorkPermit,
         fullLegalName: data.fullLegalName || null,
         taxId: data.taxId || null,
-        address: data.address ? JSON.stringify(data.address) : null,
-        bankDetails: data.bankDetails ? JSON.stringify(data.bankDetails) : null,
+        address: data.address ? JSON.stringify(data.address) : undefined,
+        bankDetails: data.bankDetails ? JSON.stringify(data.bankDetails) : undefined,
       },
       include: {
         user: {

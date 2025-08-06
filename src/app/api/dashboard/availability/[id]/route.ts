@@ -39,7 +39,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
     const validationResult = availabilityUpdateSchema.safeParse(body)
     if (!validationResult.success) {
       return NextResponse.json(
-        { error: 'Validation failed', details: validationResult.error.errors },
+        { error: 'Validation failed', details: validationResult.error.issues },
         { status: 400 }
       )
     }

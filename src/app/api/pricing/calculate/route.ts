@@ -46,7 +46,7 @@ interface PricingRule {
   id: string
   serviceId: string
   name: string
-  description?: string
+  description: string | null
   ruleType: string
   modifierType: string
   modifierValue: number
@@ -211,7 +211,7 @@ export async function POST(request: NextRequest) {
     const validationResult = pricingCalculationSchema.safeParse(body)
     if (!validationResult.success) {
       return NextResponse.json(
-        { error: 'Validation failed', details: validationResult.error.errors },
+        { error: 'Validation failed', details: validationResult.error.issues },
         { status: 400 }
       )
     }

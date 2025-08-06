@@ -22,13 +22,13 @@ export const EventSearch: React.FC<EventSearchProps> = ({ className }) => {
   const searchParams = useSearchParams()
 
   // Current filter states
-  const [search, setSearch] = React.useState(searchParams.get('search') || '')
-  const [country, setCountry] = React.useState(searchParams.get('country') || '')
-  const [state, setState] = React.useState(searchParams.get('state') || '')
-  const [city, setCity] = React.useState(searchParams.get('city') || '')
-  const [upcoming, setUpcoming] = React.useState(searchParams.get('upcoming') === 'true')
-  const [sortBy, setSortBy] = React.useState(searchParams.get('sortBy') || 'startDate')
-  const [sortOrder, setSortOrder] = React.useState(searchParams.get('sortOrder') || 'asc')
+  const [search, setSearch] = React.useState(searchParams?.get('search') || '')
+  const [country, setCountry] = React.useState(searchParams?.get('country') || '')
+  const [state, setState] = React.useState(searchParams?.get('state') || '')
+  const [city, setCity] = React.useState(searchParams?.get('city') || '')
+  const [upcoming, setUpcoming] = React.useState(searchParams?.get('upcoming') === 'true')
+  const [sortBy, setSortBy] = React.useState(searchParams?.get('sortBy') || 'startDate')
+  const [sortOrder, setSortOrder] = React.useState(searchParams?.get('sortOrder') || 'asc')
   const [showFilters, setShowFilters] = React.useState(false)
 
   // Available filter options (these could be fetched from API)

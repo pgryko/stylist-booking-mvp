@@ -29,7 +29,7 @@ const pricingRuleUpdateSchema = z.object({
     .optional(),
   priority: z.number().int().min(0).max(100).optional(),
   isActive: z.boolean().optional(),
-  conditions: z.record(z.any()).optional(),
+  conditions: z.record(z.string(), z.any()).optional(),
 })
 
 interface RouteContext {
@@ -52,7 +52,7 @@ export async function PUT(request: NextRequest, context: RouteContext) {
     const validationResult = pricingRuleUpdateSchema.safeParse(body)
     if (!validationResult.success) {
       return NextResponse.json(
-        { error: 'Validation failed', details: validationResult.error.errors },
+        { error: 'Validation failed', details: validationResult.error.issues },
         { status: 400 }
       )
     }
